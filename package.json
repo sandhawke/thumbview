@@ -1,0 +1,15 @@
+{
+  "name": "thumbnail-panel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "faucet",
+    "watch": "watchify -v --debug gmdemo.js -o static/bundle.js"
+  },
+  "author": "Sandro Hawke (http://hawke.org/sandro)",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "watchify": "^3.8.0"
+  }
+}
