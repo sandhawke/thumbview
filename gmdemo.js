@@ -17,10 +17,12 @@ const config = domdriver.watchable({
 // domdriver.create only uses second arg, not whole tail
 domdriver.create('main',
                  ['div',
+                  ['div', { $height: '900px' },
                    [mainview, config],
-                   ['div', {id: 'thumbs'},
-                    [thumbview, gm.slides, config]
-                   ]
+                  ],
+                  ['div', { $height: '320px', id: 'thumbs'},
+                   [thumbview.create(), gm.slides, config]
+                  ]
                  ]
                 )
 
@@ -38,10 +40,6 @@ function mainview (config) {
   return out
 }
   
-function onclick (item) {
-  cursor.item = item
-}
-
 function url (item, scale) {
   const name = ('000000' + item.photoKey).slice(-6)
   const group = name.slice(1,3)
