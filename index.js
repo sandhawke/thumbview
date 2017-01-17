@@ -47,19 +47,19 @@ function create () {
   function setSize () {
     // const el = document.getElementById('thumbs')  //  DOMDRIVER USAGE ERROR
     //if (el) {
-      // const w = el.clientWidth
-      const w = (config && config.thumbWidth) || 120
-      const cols = Math.floor((w-10)/(vs.thumbsize))
-      if (cols != vs.cols) {
-        vs.cols = cols
-        console.log('resize', w, cols)
-      }
+    // const w = el.clientWidth
+    const w = (config && config.thumbWidth) || 120
+    const cols = Math.floor((w-10)/(vs.thumbsize))
+    if (cols != vs.cols) {
+      vs.cols = cols
+      console.log('resize', w, cols)
+    }
 
-      const h = (config && config.thumbHeight) || 120
+    const h = (config && config.thumbHeight) || 120
     // vs.thumbsize = Math.floor((h-80)/vs.rows)-6
     vs.thumbsize = Math.floor((h-35)/vs.rows)-0
-      console.log('thumbsize = ', vs.thumbsize, ' h = ', h)
-  //}
+    console.log('thumbsize = ', vs.thumbsize, ' h = ', h)
+    //}
   }
 
   /*
@@ -73,12 +73,12 @@ function create () {
   */
 
   /*
-  window.addEventListener('resize', () => {
+    window.addEventListener('resize', () => {
     // console.log('resized')
     setSize()
-  })
-  setSize()
-*/
+    })
+    setSize()
+  */
 
   function thumbview (slidesArg, configArg) {
     // make these available to semi-global event handlers
@@ -97,77 +97,81 @@ function create () {
     setSize()
 
     /*
-    updateSelection = () => {
+      updateSelection = () => {
       let offset = vs.pageOffset
       if (offset < 0) offset += slides.length
       const item = slides[ offset + vs.row * vs.cols + vs.col ]
       config.selected = item
-    }
+      }
     */
 
     const out = ['div', {
       $position: 'absolute',
-      $top: '' + config.thumbTop + 'px'
+      $top: (config.thumbs ? config.thumbTop : config.thumbTop - 50) + 'px'
     }]
-    const pix = ['div', {
-      $position: 'absolute'
-    }]
+    if (config.thumbs) {
+      
+      const pix = ['div', {
+        $position: 'absolute'
+      }]
 
-    let offset = pageOffset()
+      let offset = pageOffset()
 
-    for (let row = 0; row < vs.rows; row++) {
-      for (let col = 0; col < vs.cols; col++) {
-        const item = slides[ offset + row * vs.cols + col ]
-        // const me = (row === vs.row && col === vs.col)
-        const me = (config.selected === item)
+      for (let row = 0; row < vs.rows; row++) {
+        for (let col = 0; col < vs.cols; col++) {
+          const item = slides[ offset + row * vs.cols + col ]
+          // const me = (row === vs.row && col === vs.col)
+          const me = (config.selected === item)
 
-        // Call config.onclick(item) if item is clicked on.  So we need
-        // a different onclick function for each item, bound to that
-        // item.  This is a bit weird, but maybe the simplest way to do
-        // it:
-        const onclick = ((i) => {
-          return () => {
-            config.selected = i
-            console.log('clicked', i)
-            if (config.onclick) config.onclick(i)
-          }
-        })(item)
-        
-        if (!item) {
-          // console.log('no slide at', offset, row, col)
-          /*
-          pix.push(['img',
-                    {
-                      height: vs.thumbsize,
-                      width: vs.thumbsize,
-                      $border: me ? '2px solid blue' : '2px solid gray',
-                      src: 'http://www.codeodor.com/images/Empty_set.png'
-                    }])
-          */
-        } else {
-          const border = me ? 4 : 0
-          if (item.photoKey) {
-            pix.push(['img', {
-              //id: 'img_' + item.photoKey,
-              $position: 'absolute',
-              $top: '' + (row * vs.thumbsize - border) + 'px',
-              $left: '' + (col * vs.thumbsize - border) + 'px',
+          // Call config.onclick(item) if item is clicked on.  So we need
+          // a different onclick function for each item, bound to that
+          // item.  This is a bit weird, but maybe the simplest way to do
+          // it:
+          const onclick = ((i) => {
+            return () => {
+              config.selected = i
+              console.log('clicked', i)
+              if (config.onclick) config.onclick(i)
+            }
+          })(item)
+          
+          if (!item) {
+            // console.log('no slide at', offset, row, col)
+            /*
+              pix.push(['img',
+              {
               height: vs.thumbsize,
               width: vs.thumbsize,
-              onclick: onclick,
-              $zIndex: me ? 2 : 1,
-              $border: me ? '4px solid blue' : '',
-              // onclick has to wait
-              src: config.url(item, vs.thumbsize)
-            }])
+              $border: me ? '2px solid blue' : '2px solid gray',
+              src: 'http://www.codeodor.com/images/Empty_set.png'
+              }])
+            */
           } else {
-            pix.push(item.altKey)
+            const border = me ? 4 : 0
+            if (item.photoKey) {
+              pix.push(['img', {
+                //id: 'img_' + item.photoKey,
+                $position: 'absolute',
+                $top: '' + (row * vs.thumbsize - border) + 'px',
+                $left: '' + (col * vs.thumbsize - border) + 'px',
+                height: vs.thumbsize,
+                width: vs.thumbsize,
+                onclick: onclick,
+                $zIndex: me ? 2 : 1,
+                $border: me ? '4px solid blue' : '',
+                // onclick has to wait
+                src: config.url(item, vs.thumbsize)
+              }])
+            } else {
+              pix.push(item.altKey)
+            }
           }
         }
+        pix.push(['br'])
       }
-      pix.push(['br'])
+      out.push(pix)
     }
-    out.push(pix)
+    
     {
       const i = indexOfSelected()
       const count = slides.length
@@ -176,11 +180,11 @@ function create () {
       const pages = Math.floor(count / pageSize) + 1
       out.push(['p', {
         $position: 'absolute',
-        $top: '' + (vs.rows * vs.thumbsize - 8) + 'px',
-        $width: '500px',
+        $top: (config.thumbs ? vs.rows * vs.thumbsize - 8 + 'px' : 0),
+        $width: '800px',
         $fontSize: '12px'
       },
-      `image ${i+1} of ${count}, page ${pageNum+1} of ${pages}`])
+                `image ${i+1} of ${count}, page ${pageNum+1} of ${pages}.  Try 0/1/2/..., arrows keys, and Home/PageUp/PageDn/End`])
     }
     return out
   }
@@ -217,21 +221,23 @@ function create () {
     }
 
     /* 
-    if (k === '1') { vs.thumbsize = 12; setSize() }
-    if (k === '2') { vs.thumbsize = 25; setSize() }
-    if (k === '3') { vs.thumbsize = 50; setSize() }
-    if (k === '4') { vs.thumbsize = 75; setSize() }
-    if (k === '5') { vs.thumbsize = 100; setSize() }
-    if (k === '6') { vs.thumbsize = 125; setSize() }
-    if (k === '7') { vs.thumbsize = 150; setSize() }
-    if (k === '8') { vs.thumbsize = 200; setSize() }
-    // if (k === '9') { vs.thumbsize = 400; setSize() }
-    */
+       if (k === '1') { vs.thumbsize = 12; setSize() }
+       if (k === '2') { vs.thumbsize = 25; setSize() }
+       if (k === '3') { vs.thumbsize = 50; setSize() }
+       if (k === '4') { vs.thumbsize = 75; setSize() }
+       if (k === '5') { vs.thumbsize = 100; setSize() }
+       if (k === '6') { vs.thumbsize = 125; setSize() }
+       if (k === '7') { vs.thumbsize = 150; setSize() }
+       if (k === '8') { vs.thumbsize = 200; setSize() }
+       // if (k === '9') { vs.thumbsize = 400; setSize() }
+       */
     const kn = parseInt(k)
     if ('' + kn === k && kn > 0) {
       vs.rows = kn
       setSize()
+      config.thumbs = true // but numbers might not be calculated yet?
     }
+    if (k === '0') { config.thumbs = !config.thumbs }
     
     // console.log('keydown', k)
   }
@@ -264,10 +270,10 @@ function create () {
 
      That is, the keyboard controls still move the current image around as expected, regardless of things being deleted....
 
-  setInterval( () => {
-    slides.splice(5, 1)
-    config.touch = slides.length
-  }, 1)
+     setInterval( () => {
+     slides.splice(5, 1)
+     config.touch = slides.length
+     }, 1)
   */
   
   return thumbview

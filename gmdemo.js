@@ -20,7 +20,8 @@ const config = domdriver.watchable({
   // onclick: onclick,
   selected: null,
   hide: true,
-  height: 260
+  height: 260,
+  thumbs: true
 })
 
 const slides = []
@@ -70,6 +71,7 @@ domdriver.create('main',
                 )
 
 function mainview (config) {
+  resize()
   const out = ['div']
   const item = config.selected
   if (item) {
@@ -110,7 +112,7 @@ function mainview (config) {
                      $fontWeight: 'bold',
                      $fontSize: '30px',
                      $color: 'white',
-                     $textShadow: '2px 2px black'
+                     $textShadow: '1px 1px 5px black'
                    }, ...titles ])
 
     console.log(item)
@@ -145,6 +147,7 @@ function resize () {
   const height = window.innerHeight
   let thumbs = height * 0.18
   if (thumbs > 300) thumbs = 250
+  if (!config.thumbs) thumbs = 0
   thumbs = Math.floor(thumbs)
   mainY = height - thumbs
   config.thumbHeight = thumbs
