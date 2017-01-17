@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "faucet",
-    "watch": "watchify -v --debug gmdemo.js -o static/bundle.js"
+    "watch": "watchify -v --debug gmdemo.js -o static/thumbs-bundle.js"
   },
   "author": "Sandro Hawke (http://hawke.org/sandro)",
   "license": "UNLICENSED",

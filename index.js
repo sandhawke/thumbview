@@ -2,39 +2,26 @@
 
 /*
   TODO:
-  - fix connection of selection and cursor, off by one, at end, etc.
-  - change layout to be absolute, we do the math
-  - improve highlight of current
-  - change sizing to be number of rows
   - add arrows ( home, pageup, move1, each dir )
   - add swipe
   - add menus for sizing
-  - switch from rows/cols to xmax and ymax, cursorX, cursorY
   - maybe allow non-square images
   - vs == view 
-  - refactor into  createThumbview, so there can be more than one
   - enter == click
 
-
-  PLAN:
-
-  user keys, clicks =>  change cursorX, cursorY, selection
-
-  on draw, we figure out offset so that that the current selection 
-  is at cursorX & cursorY, since those are things the user chose.
-
-  IN GM:
-  - upper panel interactions change selection, and slides
 
 */
 
 const domdriver = require('arraydom-driver')
 
 function create () {
-  
+
+  let slides
+  let config
+
   const vs = domdriver.watchable({
-    thumbsize: 100,
-    rows: 5,
+    thumbsize: 25,
+    rows: 3,
     cols: 5,
     row: 0,
     col: 0
@@ -52,31 +39,27 @@ function create () {
   */
 
 
+  // how to do this with secure domdriver?
+  //
+  //   maybe our object gets _width, _height?
+  //   or onresize of the element?
+
   function setSize () {
-    const el = document.getElementById('thumbs')  //  DOMDRIVER USAGE ERROR
-    if (el) {
-      const w = el.clientWidth
-      const cols = Math.floor((w-6)/(vs.thumbsize + 4))
+    // const el = document.getElementById('thumbs')  //  DOMDRIVER USAGE ERROR
+    //if (el) {
+      // const w = el.clientWidth
+      const w = (config && config.thumbWidth) || 120
+      const cols = Math.floor((w-10)/(vs.thumbsize))
       if (cols != vs.cols) {
         vs.cols = cols
         console.log('resize', w, cols)
       }
-    }
 
-    /*
-    // const h = document.getElementById('thumbs').clientHeight
-    const h = 280
-    const rows = Math.floor(h/(vs.thumbsize + 4))
-    if (rows != vs.rows) {
-      vs.rows = rows
-      console.log('resize', h, rows)
-    }
-    */
-    const h = 280
-    vs.thumbsize = Math.floor((h-4)/vs.rows)-4
-    console.log('thumbsize = ', vs.thumbsize)
-
-    
+      const h = (config && config.thumbHeight) || 120
+    // vs.thumbsize = Math.floor((h-80)/vs.rows)-6
+    vs.thumbsize = Math.floor((h-35)/vs.rows)-0
+      console.log('thumbsize = ', vs.thumbsize, ' h = ', h)
+  //}
   }
 
   /*
@@ -89,15 +72,14 @@ function create () {
     loop()
   */
 
-  window.onresize = () => {
-    console.log('resized')
+  /*
+  window.addEventListener('resize', () => {
+    // console.log('resized')
     setSize()
-  }
+  })
   setSize()
+*/
 
-  let slides
-  let config
-  
   function thumbview (slidesArg, configArg) {
     // make these available to semi-global event handlers
     // (maybe set that up when we're first called, instead)
@@ -122,9 +104,14 @@ function create () {
       config.selected = item
     }
     */
-    
-    const out = ['div', { id:'x1', width: '100%' }]
-    const pix = ['p', {}]
+
+    const out = ['div', {
+      $position: 'absolute',
+      $top: '' + config.thumbTop + 'px'
+    }]
+    const pix = ['div', {
+      $position: 'absolute'
+    }]
 
     let offset = pageOffset()
 
@@ -158,13 +145,18 @@ function create () {
                     }])
           */
         } else {
+          const border = me ? 4 : 0
           if (item.photoKey) {
             pix.push(['img', {
               //id: 'img_' + item.photoKey,
+              $position: 'absolute',
+              $top: '' + (row * vs.thumbsize - border) + 'px',
+              $left: '' + (col * vs.thumbsize - border) + 'px',
               height: vs.thumbsize,
               width: vs.thumbsize,
               onclick: onclick,
-              $border: me ? '2px solid blue' : '2px solid gray',
+              $zIndex: me ? 2 : 1,
+              $border: me ? '4px solid blue' : '',
               // onclick has to wait
               src: config.url(item, vs.thumbsize)
             }])
@@ -182,7 +174,13 @@ function create () {
       const pageSize = vs.rows * vs.cols
       const pageNum = Math.floor(indexOfSelected() / pageSize)
       const pages = Math.floor(count / pageSize) + 1
-      out.push(['p', `image ${i+1} of ${count}, page ${pageNum+1} of ${pages}`])
+      out.push(['p', {
+        $position: 'absolute',
+        $top: '' + (vs.rows * vs.thumbsize - 8) + 'px',
+        $width: '500px',
+        $fontSize: '12px'
+      },
+      `image ${i+1} of ${count}, page ${pageNum+1} of ${pages}`])
     }
     return out
   }
@@ -276,4 +274,3 @@ function create () {
 }
 
 module.exports.create = create
-
