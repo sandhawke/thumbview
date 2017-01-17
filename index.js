@@ -181,7 +181,7 @@ function create () {
       out.push(['p', {
         $position: 'absolute',
         $top: (config.thumbs ? vs.rows * vs.thumbsize - 8 + 'px' : 0),
-        $width: '800px',
+        $width: '500px',
         $fontSize: '12px'
       },
                 `image ${i+1} of ${count}, page ${pageNum+1} of ${pages}.  Try 0/1/2/..., arrows keys, and Home/PageUp/PageDn/End`])
@@ -189,7 +189,7 @@ function create () {
     return out
   }
 
-
+//  ⏮ ⏪ ◀️ ▶️️ ⏩ ⏭
 
   // http://stackoverflow.com/questions/6226859/how-can-i-track-arrow-keys-in-chrome-and-ie
   // "keypress events are only supposed to fire for keys that insert characters."
@@ -280,3 +280,26 @@ function create () {
 }
 
 module.exports.create = create
+
+
+/*
+⏮️ Last Track Button
+⏭️ Next Track Button
+◀️️ Reverse Button
+▶️️ Play Button
+⏩ Fast-forward Button
+⏪ Fast Reverse Button
+
+
+http://emojipedia.org/black-right-pointing-double-triangle-with-vertical-bar/
+
+click to hide/show controls?
+
+switch to mediaMatch events for catching re-size?
+
+use img dimensions on the main screen?   center?    caption on the side?
+
+movable caption?
+
+ */
+

@@ -58,7 +58,8 @@ if (window.location.hash) {
   }
 }
 
-let mainY 
+let mainX
+let mainY
 let imgY
 resize()
 
@@ -72,7 +73,11 @@ domdriver.create('main',
 
 function mainview (config) {
   resize()
-  const out = ['div']
+  // should use actual image size from data
+  const out = ['div', {
+    // $width: Math.min(mainX, imgY) + 'px',
+    // $overflow: 'hidden'
+  } ]
   const item = config.selected
   if (item) {
     const img = ['img', {
@@ -142,6 +147,7 @@ window.addEventListener('resize', resize)
 
 function resize () {
   const width = window.innerWidth
+  mainX = width
   config.thumbWidth = width
   
   const height = window.innerHeight
